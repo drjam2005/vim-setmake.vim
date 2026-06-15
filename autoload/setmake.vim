@@ -90,6 +90,7 @@ function! setmake#EditAccept() abort
     return
   endif
 
+  let &g:makeprg = l:command
   call setbufvar(l:source_bufnr, '&makeprg', l:command)
   setlocal nomodified
   close
