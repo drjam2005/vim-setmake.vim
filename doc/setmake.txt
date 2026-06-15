@@ -26,11 +26,11 @@ COMMANDS                                             *setmake-commands*
         Prints the effective buffer-local 'makeprg'.
 
 :SetMake
-        Opens a one-line scratch buffer at the bottom of the window with the
-        current effective 'makeprg'. Edit the command and use :w to set it as
-        the global 'makeprg' for the Vim session. The original buffer is
-        updated immediately. Use q or :q to close without changing
-        anything.
+        Opens a short terminal at the bottom of the window running your shell.
+        Use shell completion as usual, then press <Enter> to set the current
+        line as the global 'makeprg' for the Vim session. The original buffer
+        is updated immediately. Exit or close the terminal to cancel.
+        Currently requires Bash.
 
 ==============================================================================
 EXAMPLES                                             *setmake-examples*

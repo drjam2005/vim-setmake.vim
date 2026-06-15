@@ -35,8 +35,10 @@ vim -c 'helptags ~/.vim/pack/local/start/vim-setmake/doc' -c quit
 added automatically, so Vim shell-escapes the expanded filename when `:make`
 runs.
 
-`:SetMake` edits the final `makeprg` string directly. Use `:w` to set it for
-the Vim session, or `q`/`:q` to close without changing it.
+`:SetMake` opens a short terminal running your shell. Use shell completion as
+usual, then press `<Enter>` to set the current line as `makeprg` for the Vim
+session. Exit or close the terminal to cancel. This shell-backed mode currently
+requires Bash.
 
 From Vimscript, you can avoid command-line parsing entirely:
 
