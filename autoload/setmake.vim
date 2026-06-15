@@ -57,7 +57,7 @@ function! setmake#Edit() abort
   botright 1new
   let b:setmake_source_bufnr = l:source_bufnr
 
-  setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted
+  setlocal buftype=acwrite bufhidden=wipe noswapfile nobuflisted
   setlocal nowrap
   silent! file [SetMake]
 
@@ -65,8 +65,12 @@ function! setmake#Edit() abort
   normal! $
   setlocal nomodified
 
-  nnoremap <buffer><silent> <CR> :<C-U>call setmake#EditAccept()<CR>
-  inoremap <buffer><silent> <CR> <Esc>:<C-U>call setmake#EditAccept()<CR>
+  augroup setmake_edit
+    autocmd! * <buffer>
+    autocmd BufWriteCmd <buffer> call setmake#EditAccept()
+    autocmd TextChanged,TextChangedI <buffer> setlocal nomodified
+  augroup END
+
   nnoremap <buffer><silent> q :<C-U>call setmake#EditCancel()<CR>
 
   startinsert!
