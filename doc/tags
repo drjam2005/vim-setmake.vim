@@ -1,0 +1,7 @@
+setmake#Raw()	setmake.txt	/*setmake#Raw()*
+setmake#Set()	setmake.txt	/*setmake#Set()*
+setmake-api	setmake.txt	/*setmake-api*
+setmake-commands	setmake.txt	/*setmake-commands*
+setmake-contents	setmake.txt	/*setmake-contents*
+setmake-examples	setmake.txt	/*setmake-examples*
+setmake.txt	setmake.txt	/*setmake.txt*
