@@ -10,33 +10,20 @@ API................................................|setmake-api|
 ==============================================================================
 COMMANDS                                             *setmake-commands*
 
-:MakeprgSet [-cwd=WHERE] {cmd} {arg} ...
+:MakeprgSet {cmd} {arg} ...
         Sets the buffer-local 'makeprg'. Each argument is shell-escaped for you.
         Use {braces} to group one argument that contains spaces.
 
-:MakeprgSetGlobal [-cwd=WHERE] {cmd} {arg} ...
+:MakeprgSetGlobal {cmd} {arg} ...
         Same as :MakeprgSet, but sets global 'makeprg'.
 
-:MakeprgRaw [-cwd=WHERE] {command}
-        Pins a hand-written shell command to a directory without escaping each
-        argument. Use this when you need shell operators, environment
-        assignments, pipes, or redirection.
+:MakeprgRaw {command}
+        Sets a hand-written shell command without escaping each argument. Use
+        this when you need shell operators, environment assignments, pipes, or
+        redirection.
 
 :MakeprgShow
-        Prints the effective buffer-local 'makeprg' and pinned directory.
-
-:SetMake [initial command]
-        Opens a small Vim popup prompt for entering a command. Press Enter to
-        set buffer-local 'makeprg' through :MakeprgSet, or Esc to cancel. If
-        popup windows are unavailable, falls back to input().
-
-WHERE may be:
-        project   nearest parent with .git, Makefile, package.json,
-                  pyproject.toml, Cargo.toml, or go.mod; this is the default
-        buffer    current buffer's directory
-        .         current working directory at setup time
-        none      do not pin a directory
-        /path     explicit path
+        Prints the effective buffer-local 'makeprg'.
 
 ==============================================================================
 EXAMPLES                                             *setmake-examples*
@@ -47,14 +34,8 @@ Set a reliable Makefile target from anywhere in the project: >
 Build the current file, preserving spaces in paths: >
         :MakeprgSet gcc -Wall %:p -o {build/my app}
 <
-Pin to the current buffer's directory instead of the project root: >
-        :MakeprgSet -cwd=buffer make
-<
-Use shell features manually while still pinning the working directory: >
-        :MakeprgRaw -cwd=project FOO=bar make test 2>&1
-<
-Open a small prompt and type the command interactively: >
-        :SetMake
+Use shell features manually: >
+        :MakeprgRaw FOO=bar make test 2>&1
 <
 Vim filename placeholders such as %, %:p, #, and #< are kept as placeholders
 and get :S appended automatically, so Vim shell-escapes the expanded filename
@@ -69,10 +50,9 @@ setmake#Set({argv} [, {opts}])                          *setmake#Set()*
         call setmake#Set(['gcc', '-Wall', '%:p', '-o', 'build/my app'])
 <
         {opts}:
-          cwd      same values accepted by -cwd=; default is "project"
           global   set global 'makeprg' when true
 
 setmake#Raw({command} [, {opts}])                        *setmake#Raw()*
-        Pins a raw shell command without per-argument escaping.
+        Sets a raw shell command without per-argument escaping.
 
  vim:tw=78:ts=8:ft=help:norl:
