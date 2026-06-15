@@ -54,7 +54,7 @@ function! setmake#Edit() abort
   let l:source_bufnr = bufnr('%')
   let l:makeprg = &makeprg
 
-  botright 1new
+  botright 2new
   let b:setmake_source_bufnr = l:source_bufnr
 
   setlocal buftype=acwrite bufhidden=wipe noswapfile nobuflisted
