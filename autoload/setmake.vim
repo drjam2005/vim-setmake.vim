@@ -53,72 +53,37 @@ endfunction
 function! setmake#Edit() abort
   let l:source_bufnr = bufnr('%')
   let l:makeprg = &makeprg
-  let l:shell = empty($SHELL) ? &shell : $SHELL
 
-  if fnamemodify(l:shell, ':t') !=# 'bash'
-    echoerr 'setmake: terminal SetMake currently requires bash'
-    return
-  endif
-
-  let l:rcfile = tempname()
-  call writefile([
-        \ 'if [ -f ~/.bashrc ]; then . ~/.bashrc; fi',
-        \ 'set +o history',
-        \ 'PS1="makeprg> "',
-        \ '__setmake_accept() {',
-        \ '  local line json',
-        \ '  line=${READLINE_LINE}',
-        \ '  json=${line//\\/\\\\}',
-        \ '  json=${json//\"/\\\"}',
-        \ '  json=${json//$''\n''/\\n}',
-        \ '  json=${json//$''\r''/\\r}',
-        \ '  json=${json//$''\t''/\\t}',
-        \ '  printf ''\033]51;["call","SetmakeTapi_Accept",["%s"]]\007'' "$json"',
-        \ '  exit',
-        \ '}',
-        \ 'bind -x ''"\C-m":__setmake_accept''',
-        \ ], l:rcfile)
-
-  botright 3new
+  botright 1new
   let b:setmake_source_bufnr = l:source_bufnr
-  let b:setmake_rcfile = l:rcfile
 
-  let l:term_bufnr = term_start([l:shell, '--rcfile', l:rcfile, '-i'], {
-        \ 'curwin': 1,
-        \ 'term_name': '[SetMake]',
-        \ 'term_finish': 'close',
-        \ 'term_kill': 'kill',
-        \ 'norestore': 1,
-        \ 'term_api': 'SetmakeTapi_',
-        \ })
+  setlocal buftype=acwrite bufhidden=wipe noswapfile nobuflisted
+  setlocal nowrap
+  silent! file [SetMake]
 
-  if l:term_bufnr <= 0
-    call delete(l:rcfile)
-    echoerr 'setmake: failed to open terminal'
-    return
-  endif
+  call setline(1, l:makeprg)
+  normal! $
+  setlocal nomodified
 
-  call setbufvar(l:term_bufnr, 'setmake_source_bufnr', l:source_bufnr)
-  call setbufvar(l:term_bufnr, 'setmake_rcfile', l:rcfile)
   augroup setmake_edit
     autocmd! * <buffer>
-    autocmd BufWipeout <buffer> call setmake#EditCleanup(expand('<abuf>'))
+    autocmd BufWriteCmd <buffer> call setmake#EditAccept()
+    autocmd TextChanged,TextChangedI <buffer> setlocal nomodified
   augroup END
 
-  call timer_start(100, {-> term_sendkeys(l:term_bufnr, l:makeprg)})
-  startinsert
+  nnoremap <buffer><silent> q :<C-U>call setmake#EditCancel()<CR>
+
+  startinsert!
 endfunction
 
-function! setmake#EditCleanup(bufnr) abort
-  let l:rcfile = getbufvar(str2nr(a:bufnr), 'setmake_rcfile', '')
-  if !empty(l:rcfile)
-    call delete(l:rcfile)
-  endif
+function! setmake#EditCancel() abort
+  setlocal nomodified
+  close
 endfunction
 
-function! SetmakeTapi_Accept(bufnr, arglist) abort
-  let l:source_bufnr = getbufvar(a:bufnr, 'setmake_source_bufnr', -1)
-  let l:command = get(a:arglist, 0, '')
+function! setmake#EditAccept() abort
+  let l:source_bufnr = get(b:, 'setmake_source_bufnr', -1)
+  let l:command = getline(1)
 
   if empty(l:command)
     echoerr 'setmake: command must not be empty'
@@ -131,6 +96,8 @@ function! SetmakeTapi_Accept(bufnr, arglist) abort
 
   let &g:makeprg = l:command
   call setbufvar(l:source_bufnr, '&makeprg', l:command)
+  setlocal nomodified
+  close
   echo 'makeprg=' . l:command
 endfunction
 
