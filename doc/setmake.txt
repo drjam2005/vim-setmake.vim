@@ -25,6 +25,12 @@ COMMANDS                                             *setmake-commands*
 :MakeprgShow
         Prints the effective buffer-local 'makeprg'.
 
+:SetMake
+        Opens a one-line scratch buffer at the bottom of the window with the
+        current effective 'makeprg'. Edit the command and press <Enter> to set
+        it as the buffer-local 'makeprg' for the original buffer. Press q in
+        Normal mode to close without changing anything.
+
 ==============================================================================
 EXAMPLES                                             *setmake-examples*
 
@@ -36,6 +42,9 @@ Build the current file, preserving spaces in paths: >
 <
 Use shell features manually: >
         :MakeprgRaw FOO=bar make test 2>&1
+<
+Edit the current 'makeprg' in a short bottom buffer: >
+        :SetMake
 <
 Vim filename placeholders such as %, %:p, #, and #< are kept as placeholders
 and get :S appended automatically, so Vim shell-escapes the expanded filename

@@ -26,11 +26,17 @@ vim -c 'helptags ~/.vim/pack/local/start/vim-setmake/doc' -c quit
 
 " Use raw shell syntax when you need shell features.
 :MakeprgRaw FOO=bar make test 2>&1
+
+" Edit the current makeprg in a short bottom buffer.
+:SetMake
 ```
 
 `%`, `%:p`, `#`, and similar Vim file placeholders are preserved and get `:S`
 added automatically, so Vim shell-escapes the expanded filename when `:make`
 runs.
+
+`:SetMake` edits the final `makeprg` string directly. Press `<Enter>` to set it
+for the original buffer, or `q` in Normal mode to close without changing it.
 
 From Vimscript, you can avoid command-line parsing entirely:
 

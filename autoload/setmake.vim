@@ -50,6 +50,52 @@ function! setmake#CommandRaw(args, global) abort
   call setmake#Show()
 endfunction
 
+function! setmake#Edit() abort
+  let l:source_bufnr = bufnr('%')
+  let l:makeprg = &makeprg
+
+  botright 1new
+  let b:setmake_source_bufnr = l:source_bufnr
+
+  setlocal buftype=nofile bufhidden=wipe noswapfile nobuflisted
+  setlocal nowrap
+  silent! file [SetMake]
+
+  call setline(1, l:makeprg)
+  normal! $
+  setlocal nomodified
+
+  nnoremap <buffer><silent> <CR> :<C-U>call setmake#EditAccept()<CR>
+  inoremap <buffer><silent> <CR> <Esc>:<C-U>call setmake#EditAccept()<CR>
+  nnoremap <buffer><silent> q :<C-U>call setmake#EditCancel()<CR>
+
+  startinsert!
+endfunction
+
+function! setmake#EditCancel() abort
+  setlocal nomodified
+  close
+endfunction
+
+function! setmake#EditAccept() abort
+  let l:source_bufnr = get(b:, 'setmake_source_bufnr', -1)
+  let l:command = getline(1)
+
+  if empty(l:command)
+    echoerr 'setmake: command must not be empty'
+    return
+  endif
+  if l:source_bufnr <= 0 || !bufexists(l:source_bufnr)
+    echoerr 'setmake: source buffer no longer exists'
+    return
+  endif
+
+  call setbufvar(l:source_bufnr, '&makeprg', l:command)
+  setlocal nomodified
+  close
+  echo 'makeprg=' . l:command
+endfunction
+
 function! setmake#Show() abort
   echo 'makeprg=' . &l:makeprg
 endfunction
