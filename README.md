@@ -29,6 +29,9 @@ vim -c 'helptags ~/.vim/pack/local/start/vim-setmake/doc' -c quit
 
 " Edit the current makeprg in a short bottom buffer.
 :SetMake
+
+" Run the current makeprg in the background; failures are shown in :messages.
+:Maked
 ```
 
 `%`, `%:p`, `#`, and similar Vim file placeholders are preserved and get `:S`
@@ -37,6 +40,9 @@ runs.
 
 `:SetMake` edits the final `makeprg` string directly. Use `:w` to set it for
 the Vim session, or `q`/`:q` to close without changing it.
+
+`:Maked` starts the current buffer's `makeprg` as a background job. On failure,
+the exit status and captured output are added to `:messages`.
 
 From Vimscript, you can avoid command-line parsing entirely:
 

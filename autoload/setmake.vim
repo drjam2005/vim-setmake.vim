@@ -105,6 +105,49 @@ function! setmake#Show() abort
   echo 'makeprg=' . &l:makeprg
 endfunction
 
+function! setmake#RunDetached() abort
+  if !exists('*job_start')
+    echoerr 'setmake: :Maked requires Vim with job support'
+    return
+  endif
+  if empty(&l:makeprg)
+    echoerr 'setmake: makeprg is empty'
+    return
+  endif
+
+  let l:state = {'output': []}
+  let l:command = exists('*expandcmd') ? expandcmd(&l:makeprg) : &l:makeprg
+  let l:opts = {
+        \ 'out_cb': function('s:DetachedOutput', [l:state]),
+        \ 'err_cb': function('s:DetachedOutput', [l:state]),
+        \ 'exit_cb': function('s:DetachedExit', [l:state, l:command]),
+        \ }
+  let l:job = job_start(&shell . ' ' . &shellcmdflag . ' ' . shellescape(l:command), l:opts)
+  if job_status(l:job) ==# 'fail'
+    echoerr 'setmake: could not start detached build'
+    return
+  endif
+  echomsg 'setmake: started detached build'
+endfunction
+
+function! s:DetachedOutput(state, channel, message) abort
+  if !empty(a:message)
+    call add(a:state.output, a:message)
+  endif
+endfunction
+
+function! s:DetachedExit(state, command, job, status) abort
+  if a:status == 0
+    echomsg 'setmake: detached build finished successfully'
+    return
+  endif
+
+  echomsg 'setmake: detached build failed (exit ' . a:status . '): ' . a:command
+  for l:line in a:state.output
+    echomsg l:line
+  endfor
+endfunction
+
 function! s:Tokenize(text) abort
   let l:tokens = []
   let l:token = ''
