@@ -142,6 +142,11 @@ function! s:DetachedExit(state, command, job, status) abort
     return
   endif
 
+  call setqflist([], 'r', {
+        \ 'title': 'Maked: ' . a:command,
+        \ 'lines': a:state.output,
+        \ 'efm': &errorformat,
+        \ })
   echomsg 'setmake: detached build failed (exit ' . a:status . '): ' . a:command
   for l:line in a:state.output
     echomsg l:line

@@ -42,7 +42,8 @@ runs.
 the Vim session, or `q`/`:q` to close without changing it.
 
 `:Maked` starts the current buffer's `makeprg` as a background job. On failure,
-the exit status and captured output are added to `:messages`.
+the exit status and captured output are added to `:messages`; the output is
+also parsed with `'errorformat'` into the quickfix list for `:copen`.
 
 From Vimscript, you can avoid command-line parsing entirely:
 

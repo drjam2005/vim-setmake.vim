@@ -33,8 +33,9 @@ COMMANDS                                             *setmake-commands*
 
 :Maked
         Runs the current buffer's 'makeprg' as a background job. On failure,
-        the exit status and captured output are added to |:messages|. Requires
-        a Vim build with job support.
+        the exit status and captured output are added to |:messages|. Captured
+        output is parsed with 'errorformat' into the quickfix list for |:copen|.
+        Requires a Vim build with job support.
 
 ==============================================================================
 EXAMPLES                                             *setmake-examples*
